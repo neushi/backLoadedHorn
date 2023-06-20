@@ -1,14 +1,13 @@
 class Horn {
   private ArrayList<Horn_corner> corners ;
-  int targetIndex = 0;
+  private int targetIndex = 0;
 
   Horn() {
     corners = new ArrayList<Horn_corner>();
-    presetHorn();
     targetIndex = 0;
   }
   
-  private void show(){
+  void show(){
     // wall
     for (int i = 1; i < corners.size(); i++) {
       float[] p8 = find8Points_nthHornElement(i); // Throatを背にして、左(手前 奥 奥外 手前外) 右(同)
@@ -32,7 +31,7 @@ class Horn {
     }
     // horn
     for (int i = 1; i < corners.size(); i++) {
-      float[] four_points= find4Points_nthHornElement(i); // Throatを背にして、左手前 左奥 右手前 右奥 //<>//
+      float[] four_points= find4Points_nthHornElement(i); // Throatを背にして、左手前 左奥 右手前 右奥 //<>// //<>//
       push();
         fill(#f0d2c0,200);
         noStroke(); 
@@ -41,7 +40,7 @@ class Horn {
         }
       pop();
     }
-    // cornerww
+    // corner
     if (corners.size() == 0) {return;}
     if (corners.size() == 1) { 
       corners.get(0).show();
@@ -72,28 +71,16 @@ class Horn {
       pop();
     }
   }
-  private void showTarget(final int index){ //マウスに連動して動くと困るので引数が必要
-      push();
-        if (Grid) {
-          fill(TargetColor_grid);
-          rectMode(RADIUS);
-          rect(corners.get(index).p.x, corners.get(index).p.y,size_nearestCorner,size_nearestCorner);
-        } else {
-          fill(TargetColor);
-          circle(corners.get(index).p.x, corners.get(index).p.y, size_nearestCorner);
-        }
-      pop(); 
-  }
   
-  private void edit() {
+  void edit() {
     Horn_corner c1, c2;
     
-    if (edit_status == Edit_status.CANCELED) {
+    if (EditStatus == EditStatusType.CANCELED) {
       targetIndex = horn.findNearest();
       showTarget(targetIndex);
       return;
     }
-    if (edit_status == Edit_status.MOVING){
+    if (EditStatus == EditStatusType.MOVING){
       push();
         fill(TargetColor);
         if (0 < targetIndex) {
@@ -112,9 +99,9 @@ class Horn {
       pop();
       return;
     }
-    if (edit_status == Edit_status.FIXED) { 
+    if (EditStatus == EditStatusType.FIXED) { 
       move(targetIndex, (mouseX - TranslateX)/ DisplayMagnification, (mouseY - TranslateY) / DisplayMagnification);
-      edit_status = Edit_status.CANCELED;
+      EditStatus = EditStatusType.CANCELED;
       return;
     }
   }
@@ -129,39 +116,53 @@ class Horn {
     final Horn_corner c = new Horn_corner(x_new, y_new);   
     corners.remove(index);
     corners.add(index, c);
-    info();    
+    log("move");    
   }
    
-  private void shift(final int dx, final int dy) {
+  void shift(final int dx, final int dy) {
     final Horn_corner c1 = corners.get(targetIndex);
     final Horn_corner c2 = new Horn_corner(c1.p.x + dx, c1.p.y + dy);   
     corners.remove(targetIndex);
     corners.add(targetIndex, c2);
-    info();
+    log("shift");
   }
   
-  private void add() {
+  void add() {
     final int index = findNearest();
-    float x = corners.get(index).p.x;
-    float y = corners.get(index).p.y;     
+    float x = (mouseX - TranslateX)/ DisplayMagnification;
+    float y = (mouseY - TranslateY)/ DisplayMagnification;     
     if (Grid) {
       x = round(x); y = round(y);
     } 
     final Horn_corner c = new Horn_corner(x, y);
     corners.add(index, c);
-    info();
+    log("add");
   }
 
-  private void delete() {
+  void delete() {
     // cornersは空にしないこと
     if (corners.size() <= 1) {return;}
     final int index = findNearest();
     corners.remove(index);    
-    info();
+    log("delete");
+  }
+   
+  private void showTarget(final int index){ //マウスに連動して動くと困るので引数が必要
+    if (KeyPressedOption != KeyPressedType.SOUND_PATH ) {return;}
+    push();
+      if (Grid) {
+        fill(TargetColor_grid);
+        rectMode(RADIUS);
+        rect(corners.get(index).p.x, corners.get(index).p.y,size_nearestCorner,size_nearestCorner);
+      } else {
+        fill(TargetColor);
+        circle(corners.get(index).p.x, corners.get(index).p.y, size_nearestCorner);
+      }
+    pop(); 
   }
   
   private int findNearest(){
-    float squaredDistance = 999999999; // 無限大の代わり
+    float squaredDistance = VeryBigInteger; // 無限大の代わり
     int nearestIndex = 0;
     for (int i = 0; i < corners.size(); i++) {
       float sd =   sq((mouseX - TranslateX) - corners.get(i).p.x * DisplayMagnification) 
@@ -175,25 +176,6 @@ class Horn {
     return nearestIndex;
   }
 
-  private void info() {
-    float x1,y1;
-    for (int i = 0; i < corners.size(); i++) {
-      x1 = corners.get(i).p.x;
-      y1 = corners.get(i).p.y;
-      log("corners.add(new Horn_corner(" + nf(x1, 5,2) +  ", " + nf(y1,5,2) + "));" );
-    }  
-    for (int i = corners.size() -1 ; 0 < i; i--) {
-      float cos = cos_nthHornAngle(i);
-      log("// 音道長 : " + nf(partialLength(i),4,1) + "mm"
-             + ",   幅 : " + nf(halfThroat * pow(NAGAOKA_K, partialLength(i)/100), 3, 1) 
-             + ",   出口開き角度 : " + nf(degrees(acos(cos)),2,1) + "度"
-             + ",   100mm当たりホーン拡大係数 K : " + str(NAGAOKA_K));
-    }   
-    log("// 音道長 : " + nf(partialLength(0),4,1) + "mm"
-             + ",   幅 : " + nf(halfThroat * pow(NAGAOKA_K, partialLength(0)/100), 3, 1) 
-             + ",   出口開き角度 : ------"
-             + ",   100mm当たりホーン拡大係数 K : " + str(NAGAOKA_K));
-  }
   
   // nは 0 から corners.size()-1
   private float partialLength(final int n) {
@@ -201,11 +183,11 @@ class Horn {
     float sum = 0;
     if (n < 0) {
       log("partialLength : n < 0" );
-      return -999999999;
+      return -VeryBigInteger;
     }
     if (corners.size() <= n) {
       log("partialLength : corners.size() <= n" );
-      return -999999999;
+      return -VeryBigInteger;
     }
     for (int i = 0; i < n; i++) {
       x1 = corners.get(i).p.x;
@@ -231,7 +213,7 @@ class Horn {
     }
     final Horn_corner c1 = corners.get(n-1);
     final Horn_corner c2 = corners.get(n);
-    final float l = partialLength(n) - partialLength(n - 1); //<>//
+    final float l = partialLength(n) - partialLength(n - 1); //<>// //<>//
     final float w1 = halfThroat * pow(NAGAOKA_K, partialLength(n - 1)/100);
     final float w2 = halfThroat * pow(NAGAOKA_K, partialLength(n)/100) ;
     final float cx = c2.p.x - c1.p.x;
@@ -253,11 +235,11 @@ class Horn {
   private float cos_nthHornAngle(final int n) {
     if (n < 1) {
       log("cos_nthHornAngle : n < 1" );
-      return -999999999;
+      return -VeryBigInteger;
     }
     if (corners.size() <= n) {
       log("cos_nthHornAngle : corners.size() <= n" );
-      return -999999999;
+      return -VeryBigInteger;
     }    
     float[] p = find4Points_nthHornElement(n); // Throatを背にして、左手前 左奥 右奥 右手前
     float lx, ly, rx, ry;
@@ -292,8 +274,8 @@ class Horn {
     final float p2ry = c2.p.y - w2 * cx / l;
     //////////////////////////////////////////////////////////////////
     final float cos = cos_nthHornAngle(n);
-    final float w1_thickness = halfThroat * pow(NAGAOKA_K, partialLength(n - 1)/100) + wall_thickness/cos;
-    final float w2_thickness = halfThroat * pow(NAGAOKA_K, partialLength(n)/100) + wall_thickness/cos;
+    final float w1_thickness = halfThroat * pow(NAGAOKA_K, partialLength(n - 1)/100) + WallThickness/cos;
+    final float w2_thickness = halfThroat * pow(NAGAOKA_K, partialLength(n)/100) + WallThickness/cos;
     //println(w1,w2,w1_thickness,w2_thickness, cos);
     final float p1lx_thickness = c1.p.x - w1_thickness * cy / l;  // 左手前
     final float p1ly_thickness = c1.p.y + w1_thickness * cx / l;
@@ -306,47 +288,62 @@ class Horn {
     return new float[] {p1lx,p1ly,p2lx,p2ly,p2lx_thickness,p2ly_thickness,p1lx_thickness,p1ly_thickness,
                         p1rx,p1ry,p2rx,p2ry,p2rx_thickness,p2ry_thickness,p1rx_thickness,p1ry_thickness};
   }
-
+ 
+  float[] maxPosition() {
+    float x = -1;
+    float y = -1;
+    for (int i = 0; i < corners.size(); i++) {
+      x = max(x, corners.get(i).p.x);
+      y = max(y, corners.get(i).p.y);
+    }  
+    return new float[] {max(x, BoxDepth), max(y, BoxHeight)};
+  }
   
-  private void presetHorn() {
-// ここにログをコピーして直前の設計作業を再開
-/* Ver.1   ユニットとホーンが近い   
-corners.add(new Horn_corner(00132.86, 00022.57));
-corners.add(new Horn_corner(00575.29, 00026.14));
-corners.add(new Horn_corner(00574.86, 00064.86));
-corners.add(new Horn_corner(00157.14, 00062.71));
-corners.add(new Horn_corner(00155.71, 00113.86));
-corners.add(new Horn_corner(00560.71, 00118.43));
-corners.add(new Horn_corner(00521.57, 01221.14));
-corners.add(new Horn_corner(00367.29, 01211.86));
-corners.add(new Horn_corner(00352.14, 00362.86));
-corners.add(new Horn_corner(-00000.29, 00363.43));*/
-/* Ver.2 作り易そう   */
-corners.add(new Horn_corner(00132.86, 00021.57));
-corners.add(new Horn_corner(00574.71, 00025.71));
-corners.add(new Horn_corner(00554.57, 01171.86));
-corners.add(new Horn_corner(00473.71, 01171.43));
-corners.add(new Horn_corner(00463.00, 00131.71));
-corners.add(new Horn_corner(00273.57, 00142.57));
-corners.add(new Horn_corner(00222.00, 01012.00));
-corners.add(new Horn_corner(00000.00, 01013.00));
-// 音道全長 : 3991.53mm,  出口開き角度 : 19.77度,  100mm当たりホーン拡大係数 K : 1.085    
-/* 曲がりは滑らか
-corners.add(new Horn_corner(00132.86, 00022.57));
-corners.add(new Horn_corner(00574.29, 00026.14));
-corners.add(new Horn_corner(00573.86, 00064.86));
-corners.add(new Horn_corner(00157.14, 00063.71));
-corners.add(new Horn_corner(00155.71, 00114.86));
-corners.add(new Horn_corner(00560.71, 00118.43));
-corners.add(new Horn_corner(00521.00, 01102.00));
-corners.add(new Horn_corner(00393.00, 01221.00));
-corners.add(new Horn_corner(00152.57, 01187.71));
-corners.add(new Horn_corner(00124.00, 01002.71));
-corners.add(new Horn_corner(00315.00, 00669.00));
-corners.add(new Horn_corner(00317.00, 00564.00));
-corners.add(new Horn_corner(00242.71, 00454.57));
-corners.add(new Horn_corner(00092.86, 00384.29));
-corners.add(new Horn_corner(00002.29, 00384.29));*/
+ 
+  void info() {
+    float x1,y1;
+    for (int i = 0; i < corners.size(); i++) {
+      x1 = corners.get(i).p.x;
+      y1 = corners.get(i).p.y;
+      snapShot("horn.corners.add(new Horn_corner(" + nf(x1, 5,2) +  ", " + nf(y1,5,2) + "));" );
+    }  
+    for (int i = corners.size() -1 ; 0 < i; i--) {
+      float cos = cos_nthHornAngle(i);
+      snapShot("// 音道長 : " + nf(partialLength(i),4,1) + "mm"
+             + ",   幅 : " + nf(halfThroat * pow(NAGAOKA_K, partialLength(i)/100), 3, 1) 
+             + ",   出口開き角度 : " + nf(degrees(acos(cos)),2,1) + "度"
+             + ",   100mm当たりホーン拡大係数 K : " + str(NAGAOKA_K));
+    }   
+    snapShot("// 音道長 : " + nf(partialLength(0),4,1) + "mm"
+             + ",   幅 : " + nf(halfThroat * pow(NAGAOKA_K, partialLength(0)/100), 3, 1) 
+             + ",   出口開き角度 : ------"
+             + ",   100mm当たりホーン拡大係数 K : " + str(NAGAOKA_K));
+  }
+}
 
+// Data types /////////////////////////////////////////////////////
+class Horn_corner {
+  final Position p;
+  
+  Horn_corner (final float x, final float y){
+    p = new Position (x, y);
+  }
+   
+  void show() {circle(p.x, p.y, size_corner);}
+}
+
+class Position {
+  final float x;
+  final float y;
+  
+  Position (final float x_init, final float y_init) {
+    if (x_init <0) {log("bad Point1");}
+    if (BoxDepth < x_init) {log("bad Point2");}
+    if (y_init <0) {log("bad Point3");}
+    if (BoxHeight < y_init) {
+      log("bad Point4");
+    }
+    x = x_init;
+    y = y_init;
   }
 }
