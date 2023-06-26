@@ -3,7 +3,7 @@ enum KeyPressedType {SIDE_BOARD, SOUND_PATH, LUMBER_PLACEMENT};
 KeyPressedType KeyPressedOption =  KeyPressedType.LUMBER_PLACEMENT;
 enum EditStatusType {CANCELED, MOVING, FIXED};
 EditStatusType EditStatus = EditStatusType.CANCELED;
-//boolean Dragging = false;
+boolean ShiftKey = false;
 float DragFromX = 0.0;
 float DragX = 0.0;
 float DragFromY = 0.0;
@@ -23,24 +23,28 @@ void keyPressed() {
         KeyPressedOption =  KeyPressedType.LUMBER_PLACEMENT; 
       }
       break; 
-    case 'h': // show virtual Horn　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
-      ShowHorn = !ShowHorn;
-      break;
-    case 'w': // show virtual Wall of sound path　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
-      ShowWall = !ShowWall;
-      break;
-    case 'i': // show design data and other Information　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
-      DesignFile = createWriter("BLHorn_snapShot"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");
-      sideBoard.info();
-      horn.info();
-      lumber.info();
-      DesignFile.flush();DesignFile.close();
-      break;
+    case '1': // show virtual Horn　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
+      ShowCenterLine = !ShowCenterLine;break;
+    case '2': // show virtual Horn　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
+      ShowHorn = !ShowHorn;break;
+    case '3': // show virtual Wall of sound path　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
+      ShowWall = !ShowWall;break;
+    case '4': // show lumber　
+      ShowLumber = !ShowLumber;break;
     case 'f': // Fit blueprints to window size 　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT        
       CumulativeMouseCount = 0;
       updateMagnification();
       TranslateX = BorderMargin;
       TranslateY = BorderMargin;
+      break;
+    case 'i': // save design data and other Information　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
+      EditStatus = EditStatusType.CANCELED;
+      saveAllInfo();
+      break;
+    case 'p': // 
+      EditStatus = EditStatusType.CANCELED;
+      saveAllInfo();
+      save("screenshot_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".png");
       break;
     case '?': // show help #SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT  
       PApplet.runSketch(new String[] { "help" }, new HelpWindow());
@@ -64,6 +68,7 @@ void keyPressed_LumberPlacement() {
         case DOWN: lumber.shift(0,1);break; 
         case RIGHT: lumber.shift(1,0);break; 
         case LEFT: lumber.shift(-1,0);break; 
+        case SHIFT: ShiftKey = true;break;
         default:break;
       }
       break; 
@@ -112,6 +117,10 @@ void keyPressed_SideBoard() {
       NAGAOKA_K -= 0.01; break; 
     case ',':
       NAGAOKA_K -= 0.001; break; 
+    case '[':
+      BorderMargin -= 1; break; 
+    case ']':
+      BorderMargin += 1; break; 
     default:;
   }  
 }
@@ -147,6 +156,17 @@ void keyPressed_SoundPath() {
       Grid = true;
       break;
     default:;
+  }
+}
+
+void keyReleased() {
+  switch(key) {
+    case CODED:
+      switch(keyCode) {
+        case SHIFT: ShiftKey = false;break;
+        default:break;
+      }
+    default: break;
   }
 }
 

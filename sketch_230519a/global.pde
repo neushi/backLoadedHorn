@@ -11,13 +11,14 @@ float NAGAOKA_K = 1.085; // 10cm当たりの音道面積拡大率(Constant Width
 // system //////////////////////////////////////////////////
 PrintWriter LogFile;
 PrintWriter DesignFile;
+enum SelectType {START, END, WHOLE};
 boolean Grid = true;  // only for new(or moving) corner coordinates, not for preset
 final int VeryBigInteger = 999999999;
 final float defaultLumberLength = 100;  // lumberを追加するときの初期値は100mm
 final float ratio_verticalOrHorisontal = 20;
 final float diff_verticalOrHorisontal = 0.05;
 // display //////////////////////////////////////////////////
-final int BorderMargin = 30;
+int BorderMargin = 20;
 float CumulativeMouseCount = 0.0;  // 拡大率変更のためのマウスwheelカウント
 float DisplayMagnification = 0.7; 
 float TranslateX = BorderMargin;
@@ -31,6 +32,8 @@ final int LumberColor = #f0b2b3;
 final float tooNear = 1;
 boolean ShowHorn = true;
 boolean ShowWall = true;
+boolean ShowLumber = true;
+boolean ShowCenterLine = true;
 
 // data //////////////////////////////////////////////////
 final Horn horn = new Horn();

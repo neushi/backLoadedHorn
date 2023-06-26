@@ -14,15 +14,20 @@ class Lumber {
     }
     if (EditStatus == EditStatusType.MOVING){
       final int i = target.index;
-      final boolean start = target.start;
+      final APiece_lumber p = pieces.get(i);
+      final float x = (mouseX - TranslateX)/DisplayMagnification;
+      final float y = (mouseY - TranslateY)/DisplayMagnification;
       
       push();
-        if (start) {
-          line(pieces.get(i).startX, pieces.get(i).startY, 
-              (mouseX - TranslateX)/ DisplayMagnification, (mouseY - TranslateY) / DisplayMagnification);
+        if (target.selectType == SelectType.START) {
+          line(p.startX, p.startY, x, y);
+        } else if (target.selectType == SelectType.END) {
+          line(p.endX, p.endY, x, y);         
         } else {
-          line(pieces.get(i).endX, pieces.get(i).endY, 
-              (mouseX - TranslateX)/ DisplayMagnification, (mouseY - TranslateY) / DisplayMagnification);          
+      final float dx = x - (p.startX + p.endX_another)/2;
+      final float dy = y - (p.startY + p.endY_another)/2;
+          quad(p.startX +dx, p.startY +dy, p.endX +dx, p.endY +dy, 
+               p.endX_another +dx, p.endY_another +dy, p.startX_another +dx, p.startY_another +dy);
         }
       pop();
       return;
@@ -37,11 +42,14 @@ class Lumber {
   void shift(final int dx, final int dy) {
     final APiece_lumber p1 = pieces.get(target.index);
     final APiece_lumber p2;
-    if (target.start) {
+    if (target.selectType == SelectType.START) {
       p2 = new APiece_lumber(p1.startX+dx, p1.startY+dy, p1.endX, p1.endY, p1.thickness, p1.referenceSideIsRight);
-    } else {
+    } else if (target.selectType == SelectType.END) {
       p2 = new APiece_lumber(p1.startX, p1.startY, p1.endX+dx, p1.endY+dy, p1.thickness, p1.referenceSideIsRight);      
+    } else {
+      p2 = new APiece_lumber(p1.startX+dx, p1.startY+dy, p1.endX+dx, p1.endY+dy, p1.thickness, p1.referenceSideIsRight);            
     }
+
     pieces.remove(target.index);
     pieces.add(target.index, p2);
     log("shift(lumber)");
@@ -50,27 +58,41 @@ class Lumber {
   void move() {
     final APiece_lumber newPiece;
     final APiece_lumber old = pieces.get(target.index);
-    if (target.start) {
-      newPiece = new APiece_lumber((mouseX - TranslateX)/DisplayMagnification, 
-                                   (mouseY - TranslateY)/DisplayMagnification, old.endX, old.endY, 
+    final float x = (mouseX - TranslateX)/DisplayMagnification;
+    final float y = (mouseY - TranslateY)/DisplayMagnification;
+    
+    if (target.selectType == SelectType.START) {
+      newPiece = new APiece_lumber(x, y, old.endX, old.endY, 
+                                   old.thickness, old.referenceSideIsRight);
+    } else if (target.selectType == SelectType.END) {
+      newPiece = new APiece_lumber(old.startX, old.startY, x, y,
                                    old.thickness, old.referenceSideIsRight);
     } else {
-      newPiece = new APiece_lumber(old.startX, old.startY, 
-                                   (mouseX - TranslateX)/DisplayMagnification, 
-                                   (mouseY - TranslateY)/DisplayMagnification,
-                                   old.thickness, old.referenceSideIsRight);
+      final float dx = x - (old.startX + old.endX_another)/2;
+      final float dy = y - (old.startY + old.endY_another)/2;
+      newPiece = new APiece_lumber(old.startX + dx, old.startY + dy, old.endX + dx, old.endY + dy,
+                                   old.thickness, old.referenceSideIsRight);      
     }
+
     pieces.remove(target.index);
     pieces.add(target.index, newPiece);
     log("move lumber");
   }
   
   void add() {
-    final float startX = (mouseX - TranslateX)/DisplayMagnification;
-    final float startY = (mouseY - TranslateY)/DisplayMagnification;
-    final float endX = (mouseX - TranslateX) / DisplayMagnification + defaultLumberLength/sqrt(2);
-    final float endY = (mouseY - TranslateY) / DisplayMagnification + defaultLumberLength/sqrt(2);
-    add(startX, startY, endX, endY, WallThickness, true);
+    final Target t = findNearest();
+    final APiece_lumber l = pieces.get(t.index);
+    final float mx = (mouseX - TranslateX)/DisplayMagnification;
+    final float my = (mouseY - TranslateY)/DisplayMagnification;
+    if (target.selectType == SelectType.START) {
+      add(mx, my, l.endX + mx - l.startX, l.endY + my - l.startY, WallThickness, true);
+    } else if (target.selectType == SelectType.END) {
+      add(l.startX + mx - l.endX, l.startY + my - l.endY, mx, my, WallThickness, true);      
+    } else {
+      final float dx = mx - (l.startX + l.endX_another)/2;
+      final float dy = my - (l.startY + l.endY_another)/2;
+      add(l.startX + dx, l.startY + dy, l.endX + dx, l.endY + dy, WallThickness, true);            
+    }
     log("add lumber");
   }
   
@@ -90,8 +112,8 @@ class Lumber {
   void changeSide() {
     final Target t = findNearest();
     final APiece_lumber old = pieces.get(t.index); 
-    final APiece_lumber newPiece = new APiece_lumber(old.startX, old.startY, old.endX, 
-                                                     old.endY, old.thickness, !old.referenceSideIsRight);
+    final APiece_lumber newPiece = new APiece_lumber(old.startX_another, old.startY_another, old.endX_another, 
+                                                     old.endY_another, old.thickness, !old.referenceSideIsRight);
     pieces.remove(t.index);
     pieces.add(t.index, newPiece);
     log("change side");
@@ -147,19 +169,20 @@ class Lumber {
   
   void show(){
     for (int i = 0; i < pieces.size(); i++) {
-      pieces.get(i).show();
+      pieces.get(i).show(i);
     }
   }
   
   void showTarget(final Target t){
+    if (KeyPressedOption != KeyPressedType.LUMBER_PLACEMENT && !ShowLumber) { return; }
     if (KeyPressedOption == KeyPressedType.LUMBER_PLACEMENT) {
       push();
         final APiece_lumber p = pieces.get(t.index);
         noFill();
-        if (t.start == true) {
+        if (target.selectType == SelectType.START) {
             rectMode(RADIUS);
             rect(p.startX, p.startY, size_nearestCorner, size_nearestCorner);
-        } else {            
+        } else if (target.selectType == SelectType.END) {            
             circle(p.endX, p.endY, size_nearestCorner);      
         }
         blendMode(EXCLUSION);  
@@ -172,63 +195,88 @@ class Lumber {
         textSize(15);
         blendMode(DIFFERENCE);  
         fill(200);
-        text("(" + nf(p.startX,0,1) + "," + nf(p.startY,0,1) + ")", p.startX, p.startY, 80, 40);
-        text("(" + nf(p.endX,0,1) + "," + nf(p.endY,0,1) + ")", p.endX, p.endY, 80, 40);
+        text("(" + nf(p.startX,0,1) + "," + nf(p.startY,0,1) + ")", p.startX, p.startY, 200, 40);
+        text("(" + nf(p.endX,0,1) + "," + nf(p.endY,0,1) + ")", p.endX, p.endY, 200, 40);
       pop();
     }
   }
   
   void info() {
     for (int i = 0; i < pieces.size(); i++) {
-      pieces.get(i).info();
+      pieces.get(i).info(i);
     }
   }
     
   private Target findNearest() {
     float squaredDistance_s = VeryBigInteger; // 無限大の代わり
+    float squaredDistance_e = VeryBigInteger; // 無限大の代わり
+    float squaredDistance_w = VeryBigInteger; // 無限大の代わり
+    
     int nearestIndex_s = -1;
+    if (pieces.size() < 1) {
+      add(10,10,100,100,WallThickness, true);  // 一つもないときの処理が厄介なので、、、追加する位置に意味はない。
+    }
     for (int i = 0; i < pieces.size(); i++) {
-      float sd =   sq((mouseX - TranslateX) - pieces.get(i).startX * DisplayMagnification) 
-                 + sq((mouseY - TranslateY) - pieces.get(i).startY * DisplayMagnification);
+      float sd = sq(xDistanceToMouse(pieces.get(i).startX)) + sq(yDistanceToMouse(pieces.get(i).startY));
       // 後ろ優先
       if (sd <= squaredDistance_s ) {
         squaredDistance_s = sd;
         nearestIndex_s = i;
       }
     }
-    float squaredDistance_e = VeryBigInteger; // 無限大の代わり
     int nearestIndex_e = -1;
     for (int i = 0; i < pieces.size(); i++) {
-      float sd =   sq((mouseX - TranslateX) - pieces.get(i).endX * DisplayMagnification) 
-                 + sq((mouseY - TranslateY) - pieces.get(i).endY * DisplayMagnification);
+      float sd = sq(xDistanceToMouse(pieces.get(i).endX)) + sq(yDistanceToMouse(pieces.get(i).endY));
       // 後ろ優先
       if (sd <= squaredDistance_e ) {
         squaredDistance_e = sd;
         nearestIndex_e = i;
       }
     }
-    if (squaredDistance_s < squaredDistance_e) { // 後ろ優先
-      return new Target(nearestIndex_s, true); 
+    int nearestIndex_w = -1;
+    for (int i = 0; i < pieces.size(); i++) {
+      float sd = sq(xDistanceToMouse((pieces.get(i).startX + pieces.get(i).endX_another)/2))
+                 + sq(yDistanceToMouse((pieces.get(i).startY + pieces.get(i).endY_another)/2));
+      // 後ろ優先
+      if (sd <= squaredDistance_w ) {
+        squaredDistance_w = sd;
+        nearestIndex_w = i;
+      }
+    }
+    final float minSd = min(squaredDistance_s, squaredDistance_e, squaredDistance_w);
+    if (minSd == squaredDistance_w) { 
+      return new Target(nearestIndex_w, SelectType.WHOLE); 
+    } else if (minSd == squaredDistance_s) {
+      return new Target(nearestIndex_s, SelectType.START);       
     } else {
-      return new Target(nearestIndex_e, false);       
+      return new Target(nearestIndex_e, SelectType.END);       
     }      
   }
+  
+  float xDistanceToMouse(final float x) {
+    return (mouseX - TranslateX) - x * DisplayMagnification;
+  }
+  
+  float yDistanceToMouse(final float y) {
+    return (mouseY - TranslateY) - y * DisplayMagnification;
+  }
+  
 }
 
 class Target {
+  final SelectType selectType;
   final int index;
-  final boolean start;
   
-  Target(final int i, final boolean b) {
+  Target(final int i, final SelectType st) {
     index = i;
-    start = b;
+    selectType = st;
   }
 }
 
 class APiece_lumber {
-  private final float startX;  // 整数値
-  private final float startY;  // 整数値
-  private final float length;  // 整数値
+  private final float startX;  // 整数値に丸めるよ
+  private final float startY;  // 整数値に丸めるよ
+  private final float length;  // 整数値に丸めるよ
   private final float endX;
   private final float endY;
   private final float startX_another;
@@ -261,9 +309,8 @@ class APiece_lumber {
     endY_another = startY_another + (endY - startY);
   }
   
-  void show() {
-    final float[] xs = {startX, endX, endX_another, startX_another}; 
-    final float[] ys = {startY, endY, endY_another, startY_another}; 
+  void show(final int index) {
+    if (KeyPressedOption != KeyPressedType.LUMBER_PLACEMENT && !ShowLumber) { return; }
     push();
       // 外形
       noStroke(); fill(LumberColor,255); 
@@ -283,14 +330,14 @@ class APiece_lumber {
       textSize(15);
       blendMode(DIFFERENCE);  // 常に
       fill(200);
-      text(str(length), (startX + endX_another)/2, (startY + endY_another)/2, 80, 40);
+      text("#" + str(index) + " : " + nf(length,0,0), (startX + endX_another)/2, (startY + endY_another)/2, 200, 20);
     pop();
   }
   
-  void info() {
-    snapShot("lumber.add(" + nf(startX, 5, 2) + ", " + nf(startY, 5, 2)  + ", " 
-        + nf(endX, 5, 2) + ", " + nf(endY, 5, 2) + ", " 
-        + nf(thickness, 5, 2) + ", " + str(referenceSideIsRight) + "); // "
-        + round(dist(startX, startY, endX, endY)) + "mm" );
+  void info(final int i) {
+    snapShot("lumber.add(" + nf(startX, 4,0) + ", " + nf(startY, 4,0)  + ", " 
+        + nf(endX, 4, 2) + ", " + nf(endY, 4, 2) + ", " 
+        + nf(thickness, 2, 1) + ", " + str(referenceSideIsRight) + "); \t// #" + nf(i,2,0) 
+        + "  " + nf(round(dist(startX, startY, endX, endY)),4,0) + "mm" );
   }
 }

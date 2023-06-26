@@ -31,7 +31,7 @@ class Horn {
     }
     // horn
     for (int i = 1; i < corners.size(); i++) {
-      float[] four_points= find4Points_nthHornElement(i); // Throatを背にして、左手前 左奥 右手前 右奥 //<>// //<>//
+      float[] four_points= find4Points_nthHornElement(i); // Throatを背にして、左手前 左奥 右手前 右奥 //<>//
       push();
         fill(#f0d2c0,200);
         noStroke(); 
@@ -61,6 +61,7 @@ class Horn {
     }
     
     // center line
+    if (!ShowCenterLine) {return;}
     for (int i = 1; i < corners.size(); i++) {
       final Horn_corner c1 = corners.get(i-1);
       final Horn_corner c2 = corners.get(i);
@@ -164,6 +165,10 @@ class Horn {
   private int findNearest(){
     float squaredDistance = VeryBigInteger; // 無限大の代わり
     int nearestIndex = 0;
+    if (corners.size() < 1) {
+      final Horn_corner c = new Horn_corner(0,0);
+      corners.add(0, c);
+    }
     for (int i = 0; i < corners.size(); i++) {
       float sd =   sq((mouseX - TranslateX) - corners.get(i).p.x * DisplayMagnification) 
                  + sq((mouseY - TranslateY) - corners.get(i).p.y * DisplayMagnification);
@@ -213,7 +218,7 @@ class Horn {
     }
     final Horn_corner c1 = corners.get(n-1);
     final Horn_corner c2 = corners.get(n);
-    final float l = partialLength(n) - partialLength(n - 1); //<>// //<>//
+    final float l = partialLength(n) - partialLength(n - 1); //<>//
     final float w1 = halfThroat * pow(NAGAOKA_K, partialLength(n - 1)/100);
     final float w2 = halfThroat * pow(NAGAOKA_K, partialLength(n)/100) ;
     final float cx = c2.p.x - c1.p.x;
@@ -312,12 +317,12 @@ class Horn {
       snapShot("// 音道長 : " + nf(partialLength(i),4,1) + "mm"
              + ",   幅 : " + nf(halfThroat * pow(NAGAOKA_K, partialLength(i)/100), 3, 1) 
              + ",   出口開き角度 : " + nf(degrees(acos(cos)),2,1) + "度"
-             + ",   100mm当たりホーン拡大係数 K : " + str(NAGAOKA_K));
+             + ",   100mm当たりホーン拡大率 K : " + str(NAGAOKA_K));
     }   
     snapShot("// 音道長 : " + nf(partialLength(0),4,1) + "mm"
              + ",   幅 : " + nf(halfThroat * pow(NAGAOKA_K, partialLength(0)/100), 3, 1) 
              + ",   出口開き角度 : ------"
-             + ",   100mm当たりホーン拡大係数 K : " + str(NAGAOKA_K));
+             + ",   100mm当たりホーン拡大率 K : " + str(NAGAOKA_K));
   }
 }
 

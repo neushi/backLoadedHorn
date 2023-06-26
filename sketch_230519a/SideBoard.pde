@@ -33,13 +33,15 @@ class SideBoard {
       textSize(30);
       blendMode(EXCLUSION);  
       fill(#ffffff, 90);
-      rect(BoxDepth/8, BoxHeight * 2/10 , 400, 50);
-      rect(BoxDepth/8, BoxHeight * 3/10 , 400, 50);
+      rect(BoxDepth/8, BoxHeight * 2/10 , 400, 100);
+      rect(BoxDepth/8, BoxHeight * 3/10 , 400, 150);
+      rect(BoxDepth/8, BoxHeight * 5/10 , 400, 100);
       blendMode(REPLACE);  
       fill(#000000, 110);
       textAlign(CENTER);
-      text("SideBoard : " + nf(BoxHeight,0,0) + " x " + nf(BoxDepth,0,0) , BoxDepth/8, BoxHeight * 2/10, 400, 80);
-      text("NAGAOKA_K : " + nf(NAGAOKA_K,1,3)  , BoxDepth/8, BoxHeight * 3/10, 400, 80);
+      text("arrow keys\nSideBoard : " + nf(BoxHeight,0,0) + " x " + nf(BoxDepth,0,0) , BoxDepth/8, BoxHeight * 2/10, 400, 120);
+      text("j k l\nNAGAOKA_K : " + nf(NAGAOKA_K,1,3) + "\nn m ," , BoxDepth/8, BoxHeight * 3/10, 400, 150);
+      text("[ ]\nBorderMargin : " + nf(BorderMargin,0,0)  , BoxDepth/8, BoxHeight * 5/10, 400, 120);
     pop();     
   }
 
@@ -53,5 +55,6 @@ class SideBoard {
   
   void info() {
     snapShot("sideBoard.size(" + nf(BoxHeight,0,1) + ", " + nf(BoxDepth,0,1) + ");" );    
+    snapShot("NAGAOKA_K = " + str(NAGAOKA_K) + ";" );    
   }
 }

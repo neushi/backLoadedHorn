@@ -16,7 +16,7 @@ void setup() {
   frameRate(100);
   textSize(24);
   surface.setResizable(true);
-  LogFile = createWriter("BLHornDesigner_log"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");  
+  LogFile = createWriter("log_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");  
   presetDesign();
 };
 
@@ -49,6 +49,14 @@ void log(final String s) {
 void snapShot(final String s) {
   DesignFile.println(s);
   DesignFile.flush();
+}
+
+void saveAllInfo() {
+  DesignFile = createWriter("designSnapshot_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");
+  sideBoard.info();
+  horn.info();
+  lumber.info();
+  DesignFile.flush();DesignFile.close();  
 }
 
 void updateMagnification() {
@@ -95,19 +103,4 @@ void updateTranslationY() {
   }
 }
 
-float windowPointX(final float realX) {
-  return realX * DisplayMagnification + TranslateX;
-}
-
-float windowPointY(final float realY) {
-  return realY * DisplayMagnification + TranslateY;
-}
-
-float realPointX(final float x) {
-  return (x - TranslateX) / DisplayMagnification;
-}
-
-float realPointY(final float y) {
-  return (y - TranslateY) / DisplayMagnification;
-}
 ///////////////////////////////////////////////////////////////////
