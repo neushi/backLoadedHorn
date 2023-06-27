@@ -21,13 +21,15 @@ class Horn {
       pop();
     }
     // ends of partial horn
-    for (int i = 0; i < corners.size(); i++) {
-      final float radius = halfThroat * pow(NAGAOKA_K, partialLength(i)/100);
-      push();
-        fill(#d0d0d0,100);
-        noStroke(); 
-        circle(corners.get(i).p.x, corners.get(i).p.y, radius);
-      pop();
+    if (ShowCenterLine) {
+      for (int i = 0; i < corners.size(); i++) {
+        final float radius = halfThroat * pow(NAGAOKA_K, partialLength(i)/100);
+        push();
+          fill(#d0d0d0,100);
+          noStroke(); 
+          circle(corners.get(i).p.x, corners.get(i).p.y, radius);
+        pop();
+      }
     }
     // horn
     for (int i = 1; i < corners.size(); i++) {
@@ -41,6 +43,7 @@ class Horn {
       pop();
     }
     // corner
+    if (!ShowCenterLine) {return;}
     if (corners.size() == 0) {return;}
     if (corners.size() == 1) { 
       corners.get(0).show();
@@ -61,7 +64,6 @@ class Horn {
     }
     
     // center line
-    if (!ShowCenterLine) {return;}
     for (int i = 1; i < corners.size(); i++) {
       final Horn_corner c1 = corners.get(i-1);
       final Horn_corner c2 = corners.get(i);

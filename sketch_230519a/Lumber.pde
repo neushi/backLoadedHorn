@@ -318,9 +318,16 @@ class APiece_lumber {
       // blendMode(EXCLUSION);  // focusしてる時だけ
       quad(startX, startY, endX, endY, endX_another, endY_another, startX_another, startY_another);
       // 基準点
-      stroke(0);  
-      line(startX - size_corner, startY, startX + size_corner, startY);
-      line(startX, startY - size_corner, startX, startY + size_corner);
+      stroke(0);
+      if (ShowLumberDirection) {
+        strokeCap(SQUARE); strokeWeight(1);  
+        line(startX, startY, endX, endY);
+        line(startX, startY, endX_another, endY_another);
+      } else {
+        strokeCap(ROUND);
+        line(startX - size_corner, startY, startX + size_corner, startY);
+        line(startX, startY - size_corner, startX, startY + size_corner);
+      }
       // 長さ
       blendMode(REPLACE);
       rectMode(CENTER);

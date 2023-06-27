@@ -31,11 +31,16 @@ void keyPressed() {
       ShowWall = !ShowWall;break;
     case '4': // show lumber　
       ShowLumber = !ShowLumber;break;
+    case '5': 
+      ShowLumberDirection = !ShowLumberDirection;break;
+    case '0': 
+      ShowCenterLine = false; ShowHorn = false; ShowWall = false; ShowLumber = true; ShowLumberDirection = true;
+      break;
     case 'f': // Fit blueprints to window size 　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT        
       CumulativeMouseCount = 0;
       updateMagnification();
-      TranslateX = BorderMargin;
-      TranslateY = BorderMargin;
+      TranslateX = BorderMargin * DisplayMagnification;
+      TranslateY = BorderMargin * DisplayMagnification;
       break;
     case 'i': // save design data and other Information　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
       EditStatus = EditStatusType.CANCELED;
@@ -46,7 +51,7 @@ void keyPressed() {
       saveAllInfo();
       save("screenshot_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".png");
       break;
-    case '?': // show help #SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT  
+    case '?': 
       PApplet.runSketch(new String[] { "help" }, new HelpWindow());
       break;
     default:;

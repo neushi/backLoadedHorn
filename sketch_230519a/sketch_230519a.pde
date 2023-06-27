@@ -63,44 +63,32 @@ void updateMagnification() {
   if (CumulativeMouseCount < 0) {
     CumulativeMouseCount = 0;
   }
+//  log("updateMagnification():" + str(DisplayMagnification));                           
   
-  DisplayMagnification = min(((width - 2 * BorderMargin)/horn.maxPosition()[0]), 
-                             ((height - 2* BorderMargin)/horn.maxPosition()[1])) 
-                                * (1 + CumulativeMouseCount/10);
-  updateTranslation();
+  DisplayMagnification = min((width/(horn.maxPosition()[0]+2*BorderMargin)), 
+                             (height/(horn.maxPosition()[1]+2*BorderMargin)))
+                             * (1 + CumulativeMouseCount/10);
+// log(" => " + str(DisplayMagnification));                           
+   updateTranslation();
 }
 
 void updateTranslation() {
-  updateTranslationX();
-  updateTranslationY();
-}
+  // log("updateTranslation: " + str(TranslateX) + ":" + str(TranslateY));
+  if ((BoxDepth + BorderMargin) * DisplayMagnification < (width - TranslateX)) {
+    TranslateX = width - (BoxDepth + BorderMargin) * DisplayMagnification;
+  }
+  if (BorderMargin * DisplayMagnification < TranslateX) {
+    TranslateX = BorderMargin * DisplayMagnification;
+  }
 
-void updateTranslationX() {
-  if (BorderMargin < TranslateX) {
-    TranslateX = BorderMargin;
-    return;
+  if ((BoxHeight + BorderMargin) * DisplayMagnification < (height - TranslateY)) {
+    TranslateY = height - (BoxHeight + BorderMargin) * DisplayMagnification;
   }
-  if (BoxDepth * DisplayMagnification < width) {
-        TranslateX = BorderMargin;
-        return;
+  if (BorderMargin * DisplayMagnification < TranslateY) {
+    TranslateY = BorderMargin * DisplayMagnification;
   }
-  if (TranslateX < -BoxDepth * DisplayMagnification + width - BorderMargin) {
-    TranslateX = -BoxDepth * DisplayMagnification + width - BorderMargin;
-  }
-}
+  // log(" => " + str(TranslateX) + ":" + str(TranslateY));
 
-void updateTranslationY() {
-  if (BorderMargin < TranslateY) {
-    TranslateY = BorderMargin;
-    return;
-  }
-  if (BoxHeight * DisplayMagnification < height) {
-        TranslateY = BorderMargin;
-        return;
-  }
-  if (TranslateY < -BoxHeight * DisplayMagnification + height - BorderMargin) {
-    TranslateY = -BoxHeight * DisplayMagnification + height - BorderMargin;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////

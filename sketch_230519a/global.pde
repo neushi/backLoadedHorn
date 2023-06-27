@@ -21,8 +21,8 @@ final float diff_verticalOrHorisontal = 0.05;
 int BorderMargin = 20;
 float CumulativeMouseCount = 0.0;  // 拡大率変更のためのマウスwheelカウント
 float DisplayMagnification = 0.7; 
-float TranslateX = BorderMargin;
-float TranslateY = BorderMargin;
+float TranslateX = BorderMargin * DisplayMagnification;
+float TranslateY = BorderMargin * DisplayMagnification;
 final float size_corner = 4;
 float size_nearestCorner = 5;
 final int TargetColor = #FF99FF;
@@ -33,6 +33,7 @@ final float tooNear = 1;
 boolean ShowHorn = true;
 boolean ShowWall = true;
 boolean ShowLumber = true;
+boolean ShowLumberDirection = true;
 boolean ShowCenterLine = true;
 
 // data //////////////////////////////////////////////////

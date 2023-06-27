@@ -28,20 +28,21 @@ class SideBoard {
       pop(); 
     } 
     push();
-      rectMode(CORNER);
-      textLeading(20);
-      textSize(30);
+      scale(1.0);
+      rectMode(CENTER);
       blendMode(EXCLUSION);  
-      fill(#ffffff, 90);
-      rect(BoxDepth/8, BoxHeight * 2/10 , 400, 100);
-      rect(BoxDepth/8, BoxHeight * 3/10 , 400, 150);
-      rect(BoxDepth/8, BoxHeight * 5/10 , 400, 100);
+      fill(#ffffff, 70);
+      rect(width/2, height * 2/10 , width, 120);
+      rect(width/2, height * 4/10 , width, 170);
+      rect(width/2, height * 7/10 , width, 120);
       blendMode(REPLACE);  
       fill(#000000, 110);
+      textLeading(20);
+      textSize(30);
       textAlign(CENTER);
-      text("arrow keys\nSideBoard : " + nf(BoxHeight,0,0) + " x " + nf(BoxDepth,0,0) , BoxDepth/8, BoxHeight * 2/10, 400, 120);
-      text("j k l\nNAGAOKA_K : " + nf(NAGAOKA_K,1,3) + "\nn m ," , BoxDepth/8, BoxHeight * 3/10, 400, 150);
-      text("[ ]\nBorderMargin : " + nf(BorderMargin,0,0)  , BoxDepth/8, BoxHeight * 5/10, 400, 120);
+      text("arrow keys\nSideBoard : " + nf(BoxHeight,0,0) + " x " + nf(BoxDepth,0,0) , width/2, height * 2/10 +10, width, 120);
+      text("j k l\nMagnification per 10 cm, K : " + nf(NAGAOKA_K,1,3) + "\nn m ," , width/2, height * 4/10+10, width, 150);
+      text("[ ]\nBorderMargin : " + nf(BorderMargin,0,0)  , width/2, height * 7/10+10, width, 120);
     pop();     
   }
 
