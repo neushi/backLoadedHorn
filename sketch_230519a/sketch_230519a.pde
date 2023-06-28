@@ -36,6 +36,7 @@ void draw() {
   } else if (KeyPressedOption == KeyPressedType.LUMBER_PLACEMENT) {
     lumber.edit();
   }
+  // println(frameRate);
 }
 
 // functions /////////////////////////////////////////////////////
@@ -91,4 +92,11 @@ void updateTranslation() {
 
 }
 
+float xDistanceToMouse(final float x) {
+  return (mouseX - TranslateX) - x * DisplayMagnification;
+}
+
+float yDistanceToMouse(final float y) {
+  return (mouseY - TranslateY) - y * DisplayMagnification;
+}
 ///////////////////////////////////////////////////////////////////

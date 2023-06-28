@@ -162,11 +162,8 @@ class Lumber {
       pieces.add(t.index, newPiece);
       log("reverseDirection");
       return;
-    
-    // この処理不要?
-    // 終点を始点を入れ替え
   }
-  
+    
   void show(){
     for (int i = 0; i < pieces.size(); i++) {
       pieces.get(i).show(i);
@@ -202,6 +199,7 @@ class Lumber {
   }
   
   void info() {
+    sortPieces(pieces);
     for (int i = 0; i < pieces.size(); i++) {
       pieces.get(i).info(i);
     }
@@ -252,24 +250,15 @@ class Lumber {
       return new Target(nearestIndex_e, SelectType.END);       
     }      
   }
-  
-  float xDistanceToMouse(final float x) {
-    return (mouseX - TranslateX) - x * DisplayMagnification;
-  }
-  
-  float yDistanceToMouse(final float y) {
-    return (mouseY - TranslateY) - y * DisplayMagnification;
-  }
-  
-}
 
-class Target {
-  final SelectType selectType;
-  final int index;
-  
-  Target(final int i, final SelectType st) {
-    index = i;
-    selectType = st;
+  class Target {
+    final SelectType selectType;
+    final int index;
+    
+    Target(final int i, final SelectType st) {
+      index = i;
+      selectType = st;
+    }
   }
 }
 
@@ -322,6 +311,7 @@ class APiece_lumber {
       if (ShowLumberDirection) {
         strokeCap(SQUARE); strokeWeight(1);  
         line(startX, startY, endX, endY);
+        stroke(0, 50);
         line(startX, startY, endX_another, endY_another);
       } else {
         strokeCap(ROUND);
