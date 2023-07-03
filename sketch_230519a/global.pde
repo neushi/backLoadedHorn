@@ -17,6 +17,7 @@ final int VeryBigInteger = 999999999;
 final float defaultLumberLength = 100;  // lumberを追加するときの初期値は100mm
 final float ratio_verticalOrHorisontal = 20;
 final float diff_verticalOrHorisontal = 0.05;
+
 // display //////////////////////////////////////////////////
 int BorderMargin = 20;
 float CumulativeMouseCount = 0.0;  // 拡大率変更のためのマウスwheelカウント
@@ -29,14 +30,16 @@ final int TargetColor = #FF99FF;
 final int TargetColor_grid = #FF9900;
 final int overlappingColor = #00ff00;
 final int LumberColor = #f0b2b3;
-final float tooNear = 1;
+final float tooNear = 1; 
+boolean ShowCenterLine = true;
 boolean ShowHorn = true;
 boolean ShowWall = true;
 boolean ShowLumber = true;
-boolean ShowLumberDirection = true;
-boolean ShowCenterLine = true;
+boolean ShowLumberDirection = false;
+boolean ShowLumberOverlap = false;
+final float TextSize = 15;
 
 // data //////////////////////////////////////////////////
-final Horn horn = new Horn();
-final SideBoard sideBoard = new SideBoard();
-final Lumber lumber = new Lumber();
+  final Horn horn = new Horn();
+  final SideBoard sideBoard = new SideBoard();
+  final Lumber lumber = new Lumber();

@@ -52,7 +52,7 @@ class Lumber {
 
     pieces.remove(target.index);
     pieces.add(target.index, p2);
-    log("shift(lumber)");
+//    log("shift(lumber)");
   }
   
   void move() {
@@ -76,7 +76,7 @@ class Lumber {
 
     pieces.remove(target.index);
     pieces.add(target.index, newPiece);
-    log("move lumber");
+    // log("move lumber");
   }
   
   void add() {
@@ -93,20 +93,21 @@ class Lumber {
       final float dy = my - (l.startY + l.endY_another)/2;
       add(l.startX + dx, l.startY + dy, l.endX + dx, l.endY + dy, WallThickness, true);            
     }
-    log("add lumber");
   }
   
   void add(final float startX, final float startY, final float endX, final float endY, 
            final float WallThickness, final boolean referenceSideIsRight) {
+    /* log("add lumber(4) : " + str(startX) + " : " + str(startY) + " : " +  str(endX) + " : " +  str(endY) 
+         + " : " +  str(WallThickness) + " : " +  str(referenceSideIsRight) );   */
     final APiece_lumber l = new APiece_lumber(startX, startY, endX, endY, WallThickness, referenceSideIsRight);
-    pieces.add(l);      
+    pieces.add(l);     
   }
 
   void delete() {
     final Target t = findNearest();
     if (t.index == -1) { return;}
     pieces.remove(t.index);
-    log("del lumber");
+    // log("del lumber");
   }
   
   void changeSide() {
@@ -116,7 +117,7 @@ class Lumber {
                                                      old.endY_another, old.thickness, !old.referenceSideIsRight);
     pieces.remove(t.index);
     pieces.add(t.index, newPiece);
-    log("change side");
+    // log("change side");
   }
   
   void lineUp() {
@@ -129,7 +130,7 @@ class Lumber {
                                    old.thickness, old.referenceSideIsRight);
       pieces.remove(t.index);
       pieces.add(t.index, newPiece);
-      log("lineup 1");
+      // log("lineup 1");
       return;
     }
     
@@ -139,14 +140,14 @@ class Lumber {
                                                        old.thickness, old.referenceSideIsRight);
       pieces.remove(t.index);
       pieces.add(t.index, newPiece);
-      log("lineup 2");
+      // log("lineup 2");
       return; 
     } else if (ratio_verticalOrHorisontal < ratio) {
       newPiece = new APiece_lumber(old.startX, old.startY, old.endX, old.startY,
                                    old.thickness, old.referenceSideIsRight);
       pieces.remove(t.index);
       pieces.add(t.index, newPiece);
-      log("lineup 3");
+      // log("lineup 3");
       return;       
     }
   }
@@ -160,13 +161,22 @@ class Lumber {
                                    old.thickness, !old.referenceSideIsRight);
       pieces.remove(t.index);
       pieces.add(t.index, newPiece);
-      log("reverseDirection");
+      // log("reverseDirection");
       return;
   }
     
+  void changeColor(){
+    for (int i = 0; i < pieces.size(); i++) {
+      pieces.get(i).changeColor();
+    }
+  }
+  
   void show(){
     for (int i = 0; i < pieces.size(); i++) {
-      pieces.get(i).show(i);
+      pieces.get(i).show_shape();
+    }
+    for (int i = 0; i < pieces.size(); i++) {
+      pieces.get(i).show_length(i);  // 上書きされないよう、文字は最後に書く
     }
   }
   
@@ -189,7 +199,7 @@ class Lumber {
         fill(#000000,255);  
         textAlign(CENTER);
         textLeading(10);
-        textSize(15);
+        textSize(TextSize/DisplayMagnification);
         blendMode(DIFFERENCE);  
         fill(200);
         text("(" + nf(p.startX,0,1) + "," + nf(p.startY,0,1) + ")", p.startX, p.startY, 200, 40);
@@ -201,7 +211,10 @@ class Lumber {
   void info() {
     sortPieces(pieces);
     for (int i = 0; i < pieces.size(); i++) {
-      pieces.get(i).info(i);
+      pieces.get(i).info();
+    }
+    for (int i = 0; i < pieces.size(); i++) {
+      pieces.get(i).info_piece(i);
     }
   }
     
@@ -215,7 +228,7 @@ class Lumber {
       add(10,10,100,100,WallThickness, true);  // 一つもないときの処理が厄介なので、、、追加する位置に意味はない。
     }
     for (int i = 0; i < pieces.size(); i++) {
-      float sd = sq(xDistanceToMouse(pieces.get(i).startX)) + sq(yDistanceToMouse(pieces.get(i).startY));
+      float sd = sq(xPixelsToMouse(pieces.get(i).startX)) + sq(yPixelsToMouse(pieces.get(i).startY));
       // 後ろ優先
       if (sd <= squaredDistance_s ) {
         squaredDistance_s = sd;
@@ -224,7 +237,7 @@ class Lumber {
     }
     int nearestIndex_e = -1;
     for (int i = 0; i < pieces.size(); i++) {
-      float sd = sq(xDistanceToMouse(pieces.get(i).endX)) + sq(yDistanceToMouse(pieces.get(i).endY));
+      float sd = sq(xPixelsToMouse(pieces.get(i).endX)) + sq(yPixelsToMouse(pieces.get(i).endY));
       // 後ろ優先
       if (sd <= squaredDistance_e ) {
         squaredDistance_e = sd;
@@ -233,8 +246,8 @@ class Lumber {
     }
     int nearestIndex_w = -1;
     for (int i = 0; i < pieces.size(); i++) {
-      float sd = sq(xDistanceToMouse((pieces.get(i).startX + pieces.get(i).endX_another)/2))
-                 + sq(yDistanceToMouse((pieces.get(i).startY + pieces.get(i).endY_another)/2));
+      float sd = sq(xPixelsToMouse((pieces.get(i).startX + pieces.get(i).endX_another)/2))
+                 + sq(yPixelsToMouse((pieces.get(i).startY + pieces.get(i).endY_another)/2));
       // 後ろ優先
       if (sd <= squaredDistance_w ) {
         squaredDistance_w = sd;
@@ -274,6 +287,9 @@ class APiece_lumber {
   private final float endY_another;
   private final float thickness;
   private final boolean referenceSideIsRight;  // startX/Y-endX/Yの座標が右端の辺ならtrue;
+  private int color_r = int(random(255));
+  private int color_g = int(random(255));
+  private int color_b = int(random(255));
 
   APiece_lumber(final float x1, final float y1, final float x2, final float y2,
                 final float th, final boolean r) {
@@ -286,7 +302,7 @@ class APiece_lumber {
     endY = startY + vy * length / dist(x1, y1, x2, y2);
     thickness = th;
     referenceSideIsRight = r;  // startX-endYの座標が右側を表すならtrue;
-        
+    
     if (!referenceSideIsRight) {
       startX_another = startX - thickness * (endY - startY)/length;
       startY_another = startY + thickness * (endX - startX)/length;
@@ -298,13 +314,21 @@ class APiece_lumber {
     endY_another = startY_another + (endY - startY);
   }
   
-  void show(final int index) {
+  void changeColor() {
+    color_r = int(random(255));
+    color_g = int(random(255));
+    color_b = int(random(255));
+  }
+  
+  void show_shape() {
     if (KeyPressedOption != KeyPressedType.LUMBER_PLACEMENT && !ShowLumber) { return; }
     push();
       // 外形
       noStroke(); fill(LumberColor,255); 
       blendMode(REPLACE);
-      // blendMode(EXCLUSION);  // focusしてる時だけ
+      if (ShowLumberOverlap) {
+        fill(color_r, color_g, color_b);
+      }
       quad(startX, startY, endX, endY, endX_another, endY_another, startX_another, startY_another);
       // 基準点
       stroke(0);
@@ -313,28 +337,49 @@ class APiece_lumber {
         line(startX, startY, endX, endY);
         stroke(0, 50);
         line(startX, startY, endX_another, endY_another);
-      } else {
+      } else if (!ShowLumberOverlap) {
         strokeCap(ROUND);
         line(startX - size_corner, startY, startX + size_corner, startY);
         line(startX, startY - size_corner, startX, startY + size_corner);
       }
-      // 長さ
-      blendMode(REPLACE);
-      rectMode(CENTER);
-      fill(#000000,255);  
-      textAlign(CENTER);
-      textLeading(10);
-      textSize(15);
-      blendMode(DIFFERENCE);  // 常に
-      fill(200);
-      text("#" + str(index) + " : " + nf(length,0,0), (startX + endX_another)/2, (startY + endY_another)/2, 200, 20);
     pop();
   }
+
+  void show_length(final int index) {
+    push();
+      stroke(0);
+      rectMode(CENTER);
+      textAlign(CENTER);
+      textLeading(10);
+      textSize(TextSize/DisplayMagnification);
+      blendMode(DIFFERENCE);  // 常に
+      fill(200);
+      text("#" + str(index) + " : " + nf(length,0,0), (startX + endX_another)/2, (startY + endY_another)/2, 200, 40);
+    pop();    
+  }
   
-  void info(final int i) {
-    snapShot("lumber.add(" + nf(startX, 4,0) + ", " + nf(startY, 4,0)  + ", " 
-        + nf(endX, 4, 2) + ", " + nf(endY, 4, 2) + ", " 
-        + nf(thickness, 2, 1) + ", " + str(referenceSideIsRight) + "); \t// #" + nf(i,2,0) 
-        + "  " + nf(round(dist(startX, startY, endX, endY)),4,0) + "mm" );
+  void info() {
+    // 0を前置してはならない。presetDataに入れて実行した時に数値が正しく読めなくなる（バグ?）
+    snapShot("lumber.add(" + str(startX) + ", " + str(startY)  + ", " 
+        + str(endX) + ", " + str(endY) + ", " 
+        + str(thickness) + ", " + str(referenceSideIsRight) + ");");
+  }
+  
+  void info_piece(final int i) {
+    String s;
+    if (referenceSideIsRight) {
+      s = "// #" + nfs(i,2,0) + "  " + nfs(startX, 4,0) + ", " + nfs(startY, 4,0)  + "\t-R-\t" 
+        + nfs(endX, 4, 1) + ", " + nfs(endY, 4, 1) + ", \t" 
+        + nfs(round(dist(startX, startY, endX, endY)),4,0) + "mm";
+    } else {
+      s = "// #" + nfs(i,2,0) + "  " + nfs(startX, 4,0) + ", " + nfs(startY, 4,0)  + "\t-L-\t" 
+        + nfs(endX, 4, 1) + ", " + nfs(endY, 4, 1) + ", \t" 
+        + nfs(round(dist(startX, startY, endX, endY)),4,0) + "mm";
+    }
+    if ((startX + endX_another) / 2 < 0 || BoxDepth < (startX + endX_another) / 2
+        || (startY + endY_another) / 2 < 0 || BoxHeight < (startY + endY_another) / 2 ) {
+            s = s + " out of sideBoard ";
+          }
+    snapShot(s);
   }
 }

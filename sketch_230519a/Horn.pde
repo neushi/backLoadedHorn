@@ -119,7 +119,7 @@ class Horn {
     final Horn_corner c = new Horn_corner(x_new, y_new);   
     corners.remove(index);
     corners.add(index, c);
-    log("move");    
+    // log("move");    
   }
    
   void shift(final int dx, final int dy) {
@@ -127,7 +127,7 @@ class Horn {
     final Horn_corner c2 = new Horn_corner(c1.p.x + dx, c1.p.y + dy);   
     corners.remove(targetIndex);
     corners.add(targetIndex, c2);
-    log("shift");
+    // log("shift");
   }
   
   void add() {
@@ -139,7 +139,7 @@ class Horn {
     } 
     final Horn_corner c = new Horn_corner(x, y);
     corners.add(index, c);
-    log("add");
+    // log("add");
   }
 
   void delete() {
@@ -147,7 +147,7 @@ class Horn {
     if (corners.size() <= 1) {return;}
     final int index = findNearest();
     corners.remove(index);    
-    log("delete");
+    // log("delete");
   }
    
   private void showTarget(final int index){ //マウスに連動して動くと困るので引数が必要
@@ -189,11 +189,11 @@ class Horn {
     float x1,y1,x2,y2;
     float sum = 0;
     if (n < 0) {
-      log("partialLength : n < 0" );
+      // log("partialLength : n < 0" );
       return -VeryBigInteger;
     }
     if (corners.size() <= n) {
-      log("partialLength : corners.size() <= n" );
+      // log("partialLength : corners.size() <= n" );
       return -VeryBigInteger;
     }
     for (int i = 0; i < n; i++) {
@@ -209,12 +209,12 @@ class Horn {
   // nは 1 から corners.size()-1
   private float[] find4Points_nthHornElement(final int n) {
     if (n < 1) {
-      log("find4Points_nthHornElement: n < 1");
+      // log("find4Points_nthHornElement: n < 1");
       final float[] ps = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
       return ps;
     }
     if (corners.size() <= n) {
-      log("find4Points_nthHornElement : corners.size() <= n");
+      // log("find4Points_nthHornElement : corners.size() <= n");
       final float[] ps = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
       return ps;
     }
@@ -241,11 +241,11 @@ class Horn {
   // nは 1 から corners.size()-1
   private float cos_nthHornAngle(final int n) {
     if (n < 1) {
-      log("cos_nthHornAngle : n < 1" );
+      // log("cos_nthHornAngle : n < 1" );
       return -VeryBigInteger;
     }
     if (corners.size() <= n) {
-      log("cos_nthHornAngle : corners.size() <= n" );
+      // log("cos_nthHornAngle : corners.size() <= n" );
       return -VeryBigInteger;
     }    
     float[] p = find4Points_nthHornElement(n); // Throatを背にして、左手前 左奥 右奥 右手前
@@ -257,11 +257,11 @@ class Horn {
   // nは 1 から corners.size()-1
   private float[] find8Points_nthHornElement(final int n) {
     if (n < 1) {
-      log("find8Points_nthHornElement : n < 1" );
+      // log("find8Points_nthHornElement : n < 1" );
       return new float[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     }
     if (corners.size() <= n) {
-      log("find8Points_nthHornElement : corners.size() <= n" );
+      // log("find8Points_nthHornElement : corners.size() <= n" );
       return new float[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     } 
     final Horn_corner c1 = corners.get(n-1);
@@ -344,11 +344,11 @@ class Position {
   final float y;
   
   Position (final float x_init, final float y_init) {
-    if (x_init <0) {log("bad Point1");}
+//    if (x_init <0) {log("bad Point1");}
     if (BoxDepth < x_init) {log("bad Point2");}
-    if (y_init <0) {log("bad Point3");}
+//    if (y_init <0) {log("bad Point3");}
     if (BoxHeight < y_init) {
-      log("bad Point4");
+//      log("bad Point4");
     }
     x = x_init;
     y = y_init;

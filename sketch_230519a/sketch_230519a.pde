@@ -16,8 +16,8 @@ void setup() {
   frameRate(100);
   textSize(24);
   surface.setResizable(true);
-  LogFile = createWriter("log_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");  
-  presetDesign();
+//  LogFile = createWriter("log_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");  
+  presetDesign(); 
 };
 
 // draw //////////////////////////////////////////////////////////
@@ -43,8 +43,8 @@ void draw() {
 
 void log(final String s) {
   println(s);
-  LogFile.println(s);
-  LogFile.flush();
+//  LogFile.println(s);
+//  LogFile.flush();
 }
 
 void snapShot(final String s) {
@@ -61,20 +61,25 @@ void saveAllInfo() {
 }
 
 void updateMagnification() {
+  final float oldMaginification = DisplayMagnification;
   if (CumulativeMouseCount < 0) {
     CumulativeMouseCount = 0;
   }
-//  log("updateMagnification():" + str(DisplayMagnification));                           
-  
+//  log("updateMagnification():" + str(DisplayMagnification));       
+
+
   DisplayMagnification = min((width/(horn.maxPosition()[0]+2*BorderMargin)), 
                              (height/(horn.maxPosition()[1]+2*BorderMargin)))
                              * (1 + CumulativeMouseCount/10);
-// log(" => " + str(DisplayMagnification));                           
-   updateTranslation();
+// log(" => " + str(DisplayMagnification));        
+
+  TranslateX = mouseX -(mouseX - TranslateX) * DisplayMagnification / oldMaginification;
+  TranslateY = mouseY -(mouseY - TranslateY) * DisplayMagnification / oldMaginification;
+  setMinimalTranslation();
 }
 
-void updateTranslation() {
-  // log("updateTranslation: " + str(TranslateX) + ":" + str(TranslateY));
+void setMinimalTranslation() {
+  // log("setMinimalTranslation: " + str(TranslateX) + ":" + str(TranslateY)); 
   if ((BoxDepth + BorderMargin) * DisplayMagnification < (width - TranslateX)) {
     TranslateX = width - (BoxDepth + BorderMargin) * DisplayMagnification;
   }
@@ -87,16 +92,24 @@ void updateTranslation() {
   }
   if (BorderMargin * DisplayMagnification < TranslateY) {
     TranslateY = BorderMargin * DisplayMagnification;
-  }
+  }  
   // log(" => " + str(TranslateX) + ":" + str(TranslateY));
-
 }
 
-float xDistanceToMouse(final float x) {
+float xInModel(final float wx) {
+  // wx = modelX * DisplayMagnification + TranslateX;
+  return (wx - TranslateX) / DisplayMagnification;
+}
+
+float yInModel(final float wy) {
+  return (wy - TranslateY) / DisplayMagnification;
+}
+
+float xPixelsToMouse(final float x) {
   return (mouseX - TranslateX) - x * DisplayMagnification;
 }
 
-float yDistanceToMouse(final float y) {
+float yPixelsToMouse(final float y) {
   return (mouseY - TranslateY) - y * DisplayMagnification;
 }
 ///////////////////////////////////////////////////////////////////

@@ -28,21 +28,24 @@ class SideBoard {
       pop(); 
     } 
     push();
-      scale(1.0);
+      //scale(1.0);
       rectMode(CENTER);
       blendMode(EXCLUSION);  
       fill(#ffffff, 70);
-      rect(width/2, height * 2/10 , width, 120);
-      rect(width/2, height * 4/10 , width, 170);
-      rect(width/2, height * 7/10 , width, 120);
+      rect(xInModel(width/2), yInModel(height * 2/10), width/2.5 / DisplayMagnification, height/(10 * DisplayMagnification));
+      rect(xInModel(width/2), yInModel(height * 4/10), width/(2.5 * DisplayMagnification), height/(10 * DisplayMagnification));
+      rect(xInModel(width/2), yInModel(height * 6/10), width/(2.5 * DisplayMagnification), height/(10 * DisplayMagnification));
       blendMode(REPLACE);  
       fill(#000000, 110);
-      textLeading(20);
-      textSize(30);
+      //textLeading(20);
+      textSize(width/DisplayMagnification/50);
       textAlign(CENTER);
-      text("arrow keys\nSideBoard : " + nf(BoxHeight,0,0) + " x " + nf(BoxDepth,0,0) , width/2, height * 2/10 +10, width, 120);
-      text("j k l\nMagnification per 10 cm, K : " + nf(NAGAOKA_K,1,3) + "\nn m ," , width/2, height * 4/10+10, width, 150);
-      text("[ ]\nBorderMargin : " + nf(BorderMargin,0,0)  , width/2, height * 7/10+10, width, 120);
+      text("arrow keys\nSideBoard : " + nf(BoxHeight,0,0) + " x " + nf(BoxDepth,0,0) , 
+           xInModel(width/2), yInModel(height * 2/10), width/2.5 / DisplayMagnification, height/(10 * DisplayMagnification));
+      text("j k l\nMagnification per 10 cm, K : " + nf(NAGAOKA_K,1,3) + "\nn m ," , 
+           xInModel(width/2), yInModel(height * 4/10), width/2.5/ DisplayMagnification, height/(10 * DisplayMagnification));
+      text("[ ]\nBorderMargin : " + nf(BorderMargin,0,0)  , 
+           xInModel(width/2), yInModel(height * 6/10), width/2.5 / DisplayMagnification, height/(10* DisplayMagnification));
     pop();     
   }
 

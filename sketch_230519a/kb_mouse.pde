@@ -23,7 +23,7 @@ void keyPressed() {
         KeyPressedOption =  KeyPressedType.LUMBER_PLACEMENT; 
       }
       break; 
-    case '1': // show virtual Horn　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
+    case '1': 
       ShowCenterLine = !ShowCenterLine;break;
     case '2': // show virtual Horn　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
       ShowHorn = !ShowHorn;break;
@@ -31,20 +31,31 @@ void keyPressed() {
       ShowWall = !ShowWall;break;
     case '4': // show lumber　
       ShowLumber = !ShowLumber;break;
-    case '5': 
+    case '5': // for overlap check
+      ShowLumberOverlap = !ShowLumberOverlap;
+      if (ShowLumberOverlap) {
+        lumber.changeColor();
+        ShowLumberDirection = false;
+      } 
+      break;
+    case '6': // for printing final design
       ShowLumberDirection = !ShowLumberDirection;break;
     case '0': 
-      ShowCenterLine = false; ShowHorn = false; ShowWall = false; ShowLumber = true; ShowLumberDirection = true;
+      ShowCenterLine = false; ShowHorn = false; ShowWall = false; 
+      ShowLumber = true; ShowLumberDirection = true; ShowLumberOverlap = false;
       break;
     case 'f': // Fit blueprints to window size 　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT        
       CumulativeMouseCount = 0;
       updateMagnification();
-      TranslateX = BorderMargin * DisplayMagnification;
-      TranslateY = BorderMargin * DisplayMagnification;
       break;
     case 'i': // save design data and other Information　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
       EditStatus = EditStatusType.CANCELED;
       saveAllInfo();
+      ShowCenterLine = false; ShowHorn = false; ShowWall = false; 
+      ShowLumber = true; ShowLumberDirection = true; ShowLumberOverlap = false;
+      CumulativeMouseCount = 0;
+      updateMagnification();
+      KeyPressedOption = KeyPressedType.SOUND_PATH;
       break;
     case 'p': // 
       EditStatus = EditStatusType.CANCELED;
@@ -183,7 +194,7 @@ void mouseClicked() {
   }   else if (KeyPressedOption == KeyPressedType.LUMBER_PLACEMENT) {
     mouseClicked_LUMBER_PLACEMENT();    
   } else {
-    log("bad KeyPressedOption");
+    // log("bad KeyPressedOption");
   }
 }
 
@@ -237,5 +248,5 @@ void mouseDragged(MouseEvent event) {
 void mouseReleased() {
   TranslateX -= DragX;
   TranslateY -= DragY;
-  updateTranslation();
+  setMinimalTranslation();
 }
