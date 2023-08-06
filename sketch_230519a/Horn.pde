@@ -25,6 +25,7 @@ class Horn {
       for (int i = 0; i < corners.size(); i++) {
         final float radius = halfThroat * pow(NAGAOKA_K, partialLength(i)/100);
         push();
+          ellipseMode(RADIUS);
           fill(#d0d0d0,100);
           noStroke(); 
           circle(corners.get(i).p.x, corners.get(i).p.y, radius);
@@ -57,7 +58,7 @@ class Horn {
             abs(corners.get(i - 1).p.x - corners.get(i).p.x) < tooNear &&
             abs(corners.get(i - 1).p.y - corners.get(i).p.y) < tooNear) {
           fill(overlappingColor);
-          circle(corners.get(i-1).p.x, corners.get(i-1).p.y, size_nearestCorner * 2);
+          circle(corners.get(i-1).p.x, corners.get(i-1).p.y, Size_nearestCorner * 2);
         }
       pop();
       corners.get(i).show();
@@ -98,7 +99,7 @@ class Horn {
                (mouseY - TranslateY)/ DisplayMagnification, 
                 c2.p.x, c2.p.y);
         }
-        circle(corners.get(targetIndex).p.x, corners.get(targetIndex).p.y, size_nearestCorner);
+        circle(corners.get(targetIndex).p.x, corners.get(targetIndex).p.y, Size_nearestCorner);
       pop();
       return;
     }
@@ -156,10 +157,10 @@ class Horn {
       if (Grid) {
         fill(TargetColor_grid);
         rectMode(RADIUS);
-        rect(corners.get(index).p.x, corners.get(index).p.y,size_nearestCorner,size_nearestCorner);
+        rect(corners.get(index).p.x, corners.get(index).p.y,Size_nearestCorner,Size_nearestCorner);
       } else {
         fill(TargetColor);
-        circle(corners.get(index).p.x, corners.get(index).p.y, size_nearestCorner);
+        circle(corners.get(index).p.x, corners.get(index).p.y, Size_nearestCorner);
       }
     pop(); 
   }

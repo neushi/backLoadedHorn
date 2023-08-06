@@ -1,20 +1,24 @@
 // 完全幅一定のバックロードホーンスピーカーの設計支援ツール
 // design support tool for Back Loaded Horn speakers (#PURE# Constant Width only)
+// neushi作成　Ver.0.1 dataVer.1  誰でも無償で利用できます
+
+// 位置合わせ線の表示
+// Kを多段に
+// メジャー機能
+// 数字の表示  on/off
+// 寸法線の表示
+// マニュアルはgithubに置いたhtmlを見てもらう
+
 
 void settings() {
   size(int(BoxDepth), int(BoxHeight));
   pixelDensity(displayDensity());
+
 }
 
 void setup() {
-  // size(600, 800, P2D);
-  // fullScreen(P2D);
-  windowResize(int(BoxDepth)+1,int(BoxHeight)+1);
-  blendMode(REPLACE);
-  strokeWeight(1); // 1.5 seems minimum
-  ellipseMode(RADIUS);
   frameRate(100);
-  textSize(24);
+  background(0);
   surface.setResizable(true);
 //  LogFile = createWriter("log_BLHD"+String.valueOf(year())+nfs(month(),2,0)+nfs(day(),2,0)+nfs(hour(),2,0)+nfs(minute(),2,0)+nfs(second(),2,0)+".txt");  
   presetDesign(); 
@@ -22,10 +26,10 @@ void setup() {
 
 // draw //////////////////////////////////////////////////////////
 void draw() {
+  background(0);
   translate(TranslateX, TranslateY);  // translate量がscaleに影響されないように、必ずscaleの前に置く
   scale(DisplayMagnification);
-  background(0);
-  size_nearestCorner = 5/DisplayMagnification;
+  Size_nearestCorner = Size_nearestCorner_preference/DisplayMagnification;
   sideBoard.show();
   horn.show();
   lumber.show();
@@ -36,7 +40,7 @@ void draw() {
   } else if (KeyPressedOption == KeyPressedType.LUMBER_PLACEMENT) {
     lumber.edit();
   }
-  // println(frameRate);
+//   println(frameRate);
 }
 
 // functions /////////////////////////////////////////////////////

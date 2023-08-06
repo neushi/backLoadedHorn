@@ -172,6 +172,7 @@ class Lumber {
   }
   
   void show(){
+    if (!ShowLumber ) { return; }
     for (int i = 0; i < pieces.size(); i++) {
       pieces.get(i).show_shape();
     }
@@ -188,9 +189,9 @@ class Lumber {
         noFill();
         if (target.selectType == SelectType.START) {
             rectMode(RADIUS);
-            rect(p.startX, p.startY, size_nearestCorner, size_nearestCorner);
+            rect(p.startX, p.startY, Size_nearestCorner, Size_nearestCorner);
         } else if (target.selectType == SelectType.END) {            
-            circle(p.endX, p.endY, size_nearestCorner);      
+            circle(p.endX, p.endY, Size_nearestCorner);      
         }
         blendMode(EXCLUSION);  
         noStroke(); fill(LumberColor,125); 
@@ -368,11 +369,11 @@ class APiece_lumber {
   void info_piece(final int i) {
     String s;
     if (referenceSideIsRight) {
-      s = "// #" + nfs(i,2,0) + "  " + nfs(startX, 4,0) + ", " + nfs(startY, 4,0)  + "\t-R-\t" 
+      s = "// #" + nf(i,2,0) + "  " + nfs(startX, 4,0) + ", " + nfs(startY, 4,0)  + "\t-R-\t" 
         + nfs(endX, 4, 1) + ", " + nfs(endY, 4, 1) + ", \t" 
         + nfs(round(dist(startX, startY, endX, endY)),4,0) + "mm";
     } else {
-      s = "// #" + nfs(i,2,0) + "  " + nfs(startX, 4,0) + ", " + nfs(startY, 4,0)  + "\t-L-\t" 
+      s = "// #" + nf(i,2,0) + "  " + nfs(startX, 4,0) + ", " + nfs(startY, 4,0)  + "\t-L-\t" 
         + nfs(endX, 4, 1) + ", " + nfs(endY, 4, 1) + ", \t" 
         + nfs(round(dist(startX, startY, endX, endY)),4,0) + "mm";
     }

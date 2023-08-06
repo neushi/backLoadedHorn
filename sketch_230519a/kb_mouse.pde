@@ -31,16 +31,16 @@ void keyPressed() {
       ShowWall = !ShowWall;break;
     case '4': // show lumber　
       ShowLumber = !ShowLumber;break;
-    case '5': // for overlap check
+    case '5': // change lumber color for overlap check
       ShowLumberOverlap = !ShowLumberOverlap;
       if (ShowLumberOverlap) {
         lumber.changeColor();
         ShowLumberDirection = false;
       } 
       break;
-    case '6': // for printing final design
+    case '6': // show lumberDirection
       ShowLumberDirection = !ShowLumberDirection;break;
-    case '0': 
+    case '0': // for printing final design
       ShowCenterLine = false; ShowHorn = false; ShowWall = false; 
       ShowLumber = true; ShowLumberDirection = true; ShowLumberOverlap = false;
       break;
@@ -51,8 +51,6 @@ void keyPressed() {
     case 'i': // save design data and other Information　#SIDE_BOARD #SOUND_PATH #LUMBER_PLACEMENT
       EditStatus = EditStatusType.CANCELED;
       saveAllInfo();
-      ShowCenterLine = false; ShowHorn = false; ShowWall = false; 
-      ShowLumber = true; ShowLumberDirection = true; ShowLumberOverlap = false;
       CumulativeMouseCount = 0;
       updateMagnification();
       KeyPressedOption = KeyPressedType.SOUND_PATH;
@@ -100,12 +98,12 @@ void keyPressed_LumberPlacement() {
         lumber.delete();
       }
       break;
-    case 's': // 
-      lumber.changeSide(); break;
     case 'l': 
       lumber.lineUp();break;
     case 'r': 
       lumber.reverseDirection();break;
+    case 's': // 
+      lumber.changeSide(); break;
     default:;
   }
 }
